@@ -87,11 +87,6 @@ observability-thanos-store-shard-0-0                       1/1     Running   2  
 observability-thanos-store-shard-1-0                       1/1     Running   2          2d1h
 observability-thanos-store-shard-2-0                       1/1     Running   2          2d1h
 
-<hub> $ oc get pods -n open-cluster-management-addon-observability
-
-NAME                                              READY   STATUS    RESTARTS   AGE
-endpoint-observability-operator-764b6c666-9s7nz   1/1     Running   0          2d1h
-metrics-collector-deployment-765946868-hmk5d      1/1     Running   0          2d1h
 ```
 
 Now, that all pods are running, log into RHACM's dashboard and navigate to **Clusters** -> **Grafana (top right side)**. Make sure that the dashboards are available and graphs are present.
