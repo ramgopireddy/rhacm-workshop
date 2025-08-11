@@ -26,23 +26,24 @@ In order to associate the labels with local-cluster, follow the next steps (You 
 
 ```
 <managed cluster> $ oc get pods -n open-cluster-management-agent
-NAME                                         	READY   STATUS	RESTARTS   AGE
-klusterlet-645d98d7d5-hnn2z                  	1/1 	Running   0      	46m
-klusterlet-registration-agent-66fdc479cf-ltlx6   1/1 	Running   0      	46m
-klusterlet-registration-agent-66fdc479cf-qnhzj   1/1 	Running   0      	46m
-klusterlet-registration-agent-66fdc479cf-t8x5n   1/1 	Running   0      	46m
-klusterlet-work-agent-6b8b99b899-27ht9       	1/1 	Running   0      	46m
-klusterlet-work-agent-6b8b99b899-95dkr       	1/1 	Running   1      	46m
-klusterlet-work-agent-6b8b99b899-vdp9r       	1/1 	Running   0      	46m
+NAME                                READY   STATUS    RESTARTS       AGE
+klusterlet-5c7cfb456b-rr2hw         1/1     Running   0              150m
+klusterlet-agent-5dc6455d6d-fmxzk   1/1     Running   1 (130m ago)   150m
+klusterlet-agent-5dc6455d6d-t79sf   1/1     Running   0              150m
+klusterlet-agent-5dc6455d6d-w8nxp   1/1     Running   0              150m
 
 <managed cluster> $ oc get pods -n open-cluster-management-agent-addon
-NAME                                           READY   STATUS    RESTARTS   AGE
-application-manager-7c8879d57f-4x7ft           1/1     Running   0          24m
-cert-policy-controller-7584887cdf-2vkv5        1/1     Running   0          24m
-config-policy-controller-56d8d84c8c-p8z72      1/1     Running   0          24m
-governance-policy-framework-65c46c46c8-xtgfq   2/2     Running   0          24m
-iam-policy-controller-56b5bf6486-795wd         1/1     Running   0          24m
-klusterlet-addon-workmgr-55bc5d4fd-2jp55       1/1     Running   0          24m
+NAME                                                  READY   STATUS      RESTARTS       AGE
+application-manager-678f58ccd7-slqnk                  1/1     Running     1 (127m ago)   148m
+cert-policy-controller-68d94554b7-j29hc               1/1     Running     0              148m
+cluster-proxy-proxy-agent-7879dcbb66-ssqdv            3/3     Running     0              150m
+config-policy-controller-cc65bcf9-km4gb               2/2     Running     1 (126m ago)   148m
+governance-policy-framework-97d9f6578-8p8hx           2/2     Running     1 (127m ago)   148m
+hypershift-addon-agent-645f49fb84-8rhw9               2/2     Running     1 (127m ago)   150m
+hypershift-install-job-lrrz6-kpbcx                    0/1     Completed   0              149m
+iam-policy-controller-58644657c9-td7x8                1/1     Running     0              148m
+klusterlet-addon-workmgr-76966fcc95-ljwvw             1/1     Running     1 (126m ago)   150m
+managed-serviceaccount-addon-agent-6bff74567c-ff9rh   1/1     Running     1 (127m ago)   150m
 ```
 
 ## 2.2 Analyzing the managed cluster
