@@ -22,13 +22,13 @@ metadata:
 EOF
 ```
 ```
-<hub> $ oc apply -f policies-namespace.yaml
+oc apply -f policies-namespace.yaml
 ```
 
 After the namespace is created, create a PlacementRule resource. We will use the PlacementRule to associate the below policies with all clusters that are associated with the environment=production label.
 
 ```
-<hub> $ cat >> placementrule-policies.yaml << EOF
+cat >> placementrule-policies.yaml << EOF
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
@@ -43,8 +43,10 @@ spec:
     matchLabels:
       environment: production
 EOF
+```
 
-<hub> $ oc apply -f placementrule-policies.yaml
+```
+oc apply -f placementrule-policies.yaml
 ```
 
 ## Policy #1 - Network Security
@@ -73,7 +75,7 @@ spec:
 In order to create a _deny all_ NetworkPolicy object on the managed cluster using Red Hat Advanced Cluster Management for Kubernetes, apply the next commands to the hub cluster -
 
 ```
-<hub> $ cat >> denyall-networkpolicy-policy.yaml << EOF
+cat >> denyall-networkpolicy-policy.yaml << EOF
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -123,8 +125,11 @@ subjects:
   kind: Policy
   apiGroup: policy.open-cluster-management.io
 EOF
+```
 
-<hub> $ oc apply -f denyall-networkpolicy-policy.yaml
+Apply the policy.
+```
+oc apply -f denyall-networkpolicy-policy.yaml
 ```
 
 The above command creates two objects _Policy_ and _PlacementBinding_.
@@ -137,9 +142,9 @@ After the creation of the objects, navigate to **Governance** -> **Policies** in
 Make sure that the policy is effective by trying to navigate to the application once again - **https://&lt;webserver application route>/application.html**. (The application should not be accessible).
 
 In order to understand the difference between the various _complianceType_ values you can consult [https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.4/html-single/governance/index#configuration-policy-yaml-table](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.4/html-single/governance/index#configuration-policy-yaml-table):
- * `musthave` will enforce the object and a subset of the fields
- * `mustonlyhave` will enforce the object with name and all of its fields
- * `mustnothave` will enforce that an object with the same name or labels must not exist
+ * `**musthave**` will enforce the object and a subset of the fields
+ * `**mustonlyhave**` will enforce the object with name and all of its fields
+ * `**mustnothave**` will enforce that an object with the same name or labels must not exist
 
 ### Stage 2 - Allow traffic from the Ingress Controller
 
@@ -165,9 +170,8 @@ spec:
 ```
 
 Adding the NetworkPolicy to the existing policy can be done by running the next command -
-
 ```
-<hub> $ cat >> networkpolicy-policy.yaml << EOF
+cat >> networkpolicy-policy.yaml << EOF
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -246,8 +250,11 @@ subjects:
   kind: Policy
   apiGroup: policy.open-cluster-management.io
 EOF
+```
 
-<hub> $ oc apply -f networkpolicy-policy.yaml
+Apply the policy.
+```
+oc apply -f networkpolicy-policy.yaml
 ```
 
 After applying the above policy, the application will be reachable from OpenShift’s ingress controller only. Any other traffic will be dropped.
@@ -281,7 +288,7 @@ spec:
 In order to apply the LimitRange object to the managed cluster using Red Hat Advanced Cluster Management for Kubernetes, run the next commands -
 
 ```
-<hub> $ cat >> limitrange-policy.yaml << EOF
+cat >> limitrange-policy.yaml << EOF
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
@@ -334,8 +341,11 @@ subjects:
   kind: Policy
   apiGroup: policy.open-cluster-management.io
 EOF
+```
 
-<hub> $ oc apply -f limitrange-policy.yaml
+Apply the policy.
+```
+oc apply -f limitrange-policy.yaml
 ```
 
 Make sure that the managed cluster is compliant to the policy by navigating to **Governance** -> **Policies** in the Red Hat Advanced Cluster Management for Kubernetes console.
@@ -345,22 +355,23 @@ Make sure that the LimitRange object is created in your managed cluster -
 * Validate that the LimitRange object is created in the webserver-acm namespace -
 
 ```
-<managed cluster> $ oc get limitrange webserver-limit-range -o yaml -n webserver-acm
+oc get limitrange webserver-limit-range -o yaml -n webserver-acm
 ```
 
 As the admin user in the managed cluster, try to modify the values of the LimitRange resource (change the memory limit from 512Mi to 1024Mi) -
 
 ```
-<managed cluster> $ oc whoami
+oc whoami
 admin
 
-<managed cluster> $ oc edit limitrange/webserver-limit-range -n webserver-acm
+```
+oc edit limitrange/webserver-limit-range -n webserver-acm
 ```
 
 Notice that if you list the LimitRange resource again, the value of the memory limit is back to 512Mi. The 1024Mi value was overridden by the Red Hat Advanced Cluster Management’s policy controller. Changing the LimitRange’s values is only possible by editing the Policy object on the hub cluster.
 
 ```
-<managed cluster> $ oc get limitrange webserver-limit-range -o yaml -n webserver-acm
+oc get limitrange webserver-limit-range -o yaml -n webserver-acm
 ...
   limits:
   - default:
@@ -379,7 +390,7 @@ After deploying the policy, make sure that it is in a `compliant` state.
 Create a namespace with the `rhacm-dangerous-policy-namespace` name on the managed cluster. Make sure that a violation is initiated.
 
 ```
-<managed cluster> $ oc create namespace rhacm-dangerous-policy-namespace
+oc create namespace rhacm-dangerous-policy-namespace
 ```
 
 Change the remediationAction in your policy to `enforce`. The violation should be remediated.
@@ -391,7 +402,7 @@ In this section you will use RHACM’s built-in GitOps mechanism to manage your 
 Before you start this section of the exercise, make sure you delete the namespace containing the policies you used in the previous section.
 
 ```
-<hub> $ oc delete project rhacm-policies
+oc delete project rhacm-policies
 ```
 
 1. For this exercise, you can create a fork of the next GitHub repository - [https://github.com/tosin2013/rhacm-workshop](https://github.com/tosin2013/rhacm-workshop). This will allow for testing to directly edit policies from git. If you do want to use the fork, please replace the urls with your own forked repo for the duration of this exercise.
@@ -401,15 +412,15 @@ Before you start this section of the exercise, make sure you delete the namespac
 2. Afterwards, create a namespace on which you will deploy the RHACM resources (Use the namespace.yaml file in the repository) -
 
 ```
-<hub> $ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/05.Governance-Risk-Compliance/exercise/namespace.yaml
+oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/05.Governance-Risk-Compliance/exercise/namespace.yaml
 ```
 
 3. Now, clone the official policy-collection GitHub repository to your machine. The repository contains a binary named **deploy.sh**. The binary is used to associate policies in a GitHub repository to a running Red Hat Advanced Cluster Management for Kubernetes cluster.
 
 ```
-<hub> $ git clone https://github.com/open-cluster-management/policy-collection.git
+git clone https://github.com/open-cluster-management/policy-collection.git
 
-<hub> $ cd policy-collection/deploy/
+cd policy-collection/deploy/
 ```
 
 4.a. If you are using the kubeadmin user, create an identity provider by running the next commands (It is not possible to create policies via GitOps using the kubeadmin user). The identity provider will create the `workshop-admin` user -
@@ -420,13 +431,16 @@ sudo dnf install httpd-tools -y
 ```
 
 ```
-<hub> $ htpasswd -c -B -b htpasswd workshop-admin redhat
-
-<hub> $ oc create secret generic localusers --from-file htpasswd=htpasswd -n openshift-config
-
-<hub> $ oc adm policy add-cluster-role-to-user cluster-admin workshop-admin
-
-<hub> $ oc get -o yaml oauth cluster > oauth.yaml
+htpasswd -c -B -b htpasswd workshop-admin redhat
+```
+```
+oc create secret generic localusers --from-file htpasswd=htpasswd -n openshift-config
+```
+```
+oc adm policy add-cluster-role-to-user cluster-admin workshop-admin
+```
+```
+oc get -o yaml oauth cluster > oauth.yaml
 ```
 
 4.b. Edit the `oauth.yaml` file. The result should look like -
@@ -445,28 +459,28 @@ spec:
     type: HTPasswd
 ```
 
-4.c. Replace the cluster's identity provider by running the next command. This will take a few minutes to apply. -
+4.c. Replace the cluster's identity provider by running the next command. This will take a few minutes to take effect. -
 
 ```
-<hub> $ oc replace -f oauth.yaml
+oc replace -f oauth.yaml
 ```
 
 4.d. Login with the created user -
 
 ```
-<hub> $ oc login -u workshop-admin -p redhat
+oc login -u workshop-admin -p redhat
 ```
 
 5. Run the next command to allow your username deploy policies via Git (If you're not using the `workshop-admin` user to run the command, make sure to edit the command in order to associate your user with the `subscription-admin` ClusterRole. Make sure to run the command even if you are using an administrative user!) -
 
 ```
-<hub> $ oc patch clusterrolebinding.rbac open-cluster-management:subscription-admin -p '{"subjects": [{"apiGroup":"rbac.authorization.k8s.io", "kind":"User", "name":"workshop-admin"}]}'
+oc patch clusterrolebinding.rbac open-cluster-management:subscription-admin -p '{"subjects": [{"apiGroup":"rbac.authorization.k8s.io", "kind":"User", "name":"workshop-admin"}]}'
 ```
 
 6. You can now deploy the policies from your forked repository to Advanced Cluster Management.
 
 ```
-<hub> $ ./deploy.sh --url https://github.com/tosin2013/rhacm-workshop.git --branch master --path 05.Governance-Risk-Compliance/exercise/exercise-policies --namespace rhacm-policies
+./deploy.sh --url https://github.com/tosin2013/rhacm-workshop.git --branch master --path 05.Governance-Risk-Compliance/exercise/exercise-policies --namespace rhacm-policies
 ```
 
 7. Make sure that the policies are deployed in the **Governance** -> **Policies** tab in the Advanced Cluster Management for Kubernetes console.
@@ -481,7 +495,7 @@ spec:
 10. Log into managed cluster. Make sure that the change in GitHub was applied to the LimitRange resource.
 
 ```
-<managed cluster> $ oc get limitrange webserver-limit-range -o yaml -n webserver-acm
+oc get limitrange webserver-limit-range -o yaml -n webserver-acm
 ...
   limits:
   - default:
@@ -517,7 +531,7 @@ data:
 Deploy the templated policy by running the next command on the hub cluster -
 
 ```
-<hub> $ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/05.Governance-Risk-Compliance/exercise/exercise-templates/metrics-configmap.yaml
+oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/05.Governance-Risk-Compliance/exercise/exercise-templates/metrics-configmap.yaml
 ```
 
 The policy will appear at the Governance dashboard at a non-compliant state. The policy depends on the `mariadb` Secret resource and the `mariadb` Service resource. Since you have not created them yet, the policy is not able to create the desired ConfigMap resource.
@@ -525,7 +539,7 @@ The policy will appear at the Governance dashboard at a non-compliant state. The
 Deploy the mariadb-metrics application in order to create the mariadb and exporter instances. Deploy the application by running the next command -
 
 ```
-<hub> $ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/05.Governance-Risk-Compliance/exercise/exercise-application/rhacm-resources/application.yaml
+oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/05.Governance-Risk-Compliance/exercise/exercise-application/rhacm-resources/application.yaml
 ```
 
 Wait until the application is available. After the application is available, make sure that the policy you have deployed is compliant in the Governance dashboard. Make sure that the template worked by running the next command on the managed cluster.
@@ -552,7 +566,10 @@ mysqld-exporter   mysqld-exporter-mariadb-metrics.apps.cluster-6f0a.6f0a.sandbox
 Mariadb metrics are presented by running the next command -
 
 ```
-<managed cluster> $ curl https://<route>/metrics -k
+$ curl https://<route>/metrics -k
+```
+
+```
 ...
 # HELP go_memstats_heap_inuse_bytes Number of heap bytes that are in use.
 # TYPE go_memstats_heap_inuse_bytes gauge
