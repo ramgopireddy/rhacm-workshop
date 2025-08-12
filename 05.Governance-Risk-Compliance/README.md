@@ -564,6 +564,7 @@ Mariadb metrics are presented by running the next command -
 $ curl https://<route>/metrics -k
 ```
 
+Output - 
 ```
 ...
 # HELP go_memstats_heap_inuse_bytes Number of heap bytes that are in use.
