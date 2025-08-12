@@ -11,6 +11,7 @@ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/04
 **NOTE!** Make sure that the `environment=production` label is associated with the managed cluster!
 
 Try to access the route exposed by the application deployed in the previous step:
+**https://<webserver application route>/application.html**
 
 ```
 oc get routes -n webserver-acm
