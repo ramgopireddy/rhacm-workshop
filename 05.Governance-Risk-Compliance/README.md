@@ -556,7 +556,11 @@ metadata:
 Navigate to the URL exported by the `Route` resource in the `mariadb-metrics` namespace. The `Route` exposes the mariadb metrics from the exporter instance.
 
 ```
-<managed cluster> $ oc get route -n mariadb-metrics
+oc get route -n mariadb-metrics
+```
+
+Output
+```
 NAME              HOST/PORT                                                                       PATH   SERVICES          PORT       TERMINATION   WILDCARD
 mysqld-exporter   mysqld-exporter-mariadb-metrics.apps.cluster-6f0a.6f0a.sandbox664.opentlc.com          mysqld-exporter   9104-tcp   edge          None
 ```
