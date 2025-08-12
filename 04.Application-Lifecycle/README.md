@@ -18,14 +18,16 @@ To achieve a functioning application create the next resources -
 * **Namespace** - Create a namespace in which the custom resources are going to be deployed on the hub.
 
 ```
-<hub> $ cat >> namespace.yaml << EOF
+cat >> namespace.yaml << EOF
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: webserver-acm
 EOF
-
+```
+Apply changes:
+```
 <hub> $ oc apply -f namespace.yaml
 ```
 
@@ -33,7 +35,7 @@ EOF
 * **Channel** - Create a channel that refers to the GitHub repository in which the application’s resources are placed. The GitHub repository is at - [https://github.com/tosin2013/rhacm-workshop.git](https://github.com/tosin2013/rhacm-workshop.git)
 
 ```
-<hub> $ cat >> channel.yaml << EOF
+cat >> channel.yaml << EOF
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: Channel
@@ -44,15 +46,17 @@ spec:
   type: Git
   pathname: https://github.com/tosin2013/rhacm-workshop.git
 EOF
-
-<hub> $ oc apply -f channel.yaml
+```
+Apply channel:
+```
+oc apply -f channel.yaml
 ```
 
 
 * **PlacementRule** - Create a PlacementRule that aggregates all clusters with the **environment=dev** label. This PlacementRule will be used to group all clusters that will run the development version of the application.
 
 ```
-<hub> $ cat >> placementrule-dev.yaml << EOF
+cat >> placementrule-dev.yaml << EOF
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
@@ -67,14 +71,16 @@ spec:
     matchLabels:
       environment: dev
 EOF
-
-<hub> $ oc apply -f placementrule-dev.yaml
+```
+Apply Placement Rule:
+```
+oc apply -f placementrule-dev.yaml
 ```
 
 * **Subscription** - Create a subscription that binds between the defined above **PlacementRule** and **Channel** resources. The subscription will point to the relevant path on which the application resources are present - _04.Application-Lifecycle/exercise-application/application-resources_. Furthermore, the Subscription will point to the **dev** branch, in order to deploy the development version of the application.
 
 ```
-<hub> $ cat >> subscription-dev.yaml << EOF
+cat >> subscription-dev.yaml << EOF
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: Subscription
@@ -93,14 +99,16 @@ spec:
       kind: PlacementRule
       name: dev-clusters
 EOF
-
-<hub> $ oc apply -f subscription-dev.yaml 
+```
+Apply subscription:
+```
+oc apply -f subscription-dev.yaml 
 ```
 
 * **Application** - Create an Application resource to aggregate Subscription resources. The Application resource aggregates the Subscription resources by using labels. In this case, you will be using the label - **app: webserver-app**.
 
 ```
-<hub> $ cat >> application.yaml << EOF
+cat >> application.yaml << EOF
 ---
 apiVersion: app.k8s.io/v1beta1
 kind: Application
@@ -119,8 +127,10 @@ spec:
       values:
       - webserver-app
 EOF
-
-<hub> $ oc apply -f application.yaml 
+```
+Apply application:
+```
+oc apply -f application.yaml 
 ```
 
 After the resources are created. In the RHACM portal, navigate to **Applications** -> **&lt;application name>**. Make sure that the resources are created.
@@ -128,7 +138,7 @@ After the resources are created. In the RHACM portal, navigate to **Applications
 Run the next command on the managed cluster -
 
 ```
-<managed> $ oc get route -n webserver-acm
+oc get route -n webserver-acm
 ```
 
 Navigate to the application's frontend at **https://&lt;route-url>/application.html**
@@ -136,7 +146,7 @@ Navigate to the application's frontend at **https://&lt;route-url>/application.h
 Make sure that the application is running the **development version** on the cluster. Validate that the application is deployed by running the next command -
 
 ```
-<managed cluster> $ oc get pods -n webserver-acm
+oc get pods -n webserver-acm
 ```
 
 Now that you have the **Development** version of the application running, it’s time to deploy the **Production** version alongside the **Development** version. Create the next resources -
@@ -144,7 +154,7 @@ Now that you have the **Development** version of the application running, it’s
 * **PlacementRule** - Create a PlacementRule that aggregates the **production** clusters using the **environment=production** label.
 
 ```
-<hub> $ cat >> placementrule-production.yaml << EOF
+cat >> placementrule-production.yaml << EOF
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
@@ -159,14 +169,16 @@ spec:
     matchLabels:
       environment: production
 EOF
-
-<hub> $ oc apply -f placementrule-production.yaml
+```
+Apply Production placement rule:
+```
+oc apply -f placementrule-production.yaml
 ```
 
 *   **Subscription** - Create a Subscription that maps the newly created **PlacementRule** to the previously created **Channel**. The subscription uses the **master** branch in the **Channel** in order to run the **production** version of the application.
 
 ```
-<hub> $ cat >> subscription-production.yaml << EOF
+cat >> subscription-production.yaml << EOF
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: Subscription
@@ -184,8 +196,10 @@ spec:
       kind: PlacementRule
       name: prod-clusters
 EOF
-
-<hub> $ oc apply -f subscription-production.yaml
+```
+Apply Production subscription:
+```
+oc apply -f subscription-production.yaml
 ```
 
 After creating the resources,  navigate to **Applications** -> **webserver-app**. On the left, at the `Subscription` sidebar, choose `All Subscriptions`. Note that the newly created Subscription does not deploy any resource on any of the clusters since there are no clusters with the **environment=production** label.
@@ -209,7 +223,7 @@ Click on the application’s route resource, and navigate to **https://&lt;route
 **NOTE:** All of the resources you have configured in this exercise are present in the [git repository](https://github.com/tosin2013/rhacm-workshop.git). The resources can be created by running the next command -
 
 ```
-<hub> $ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/04.Application-Lifecycle/exercise-application/rhacm-resources/application.yaml
+oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/04.Application-Lifecycle/exercise-application/rhacm-resources/application.yaml
 ```
 
 # ArgoCD Integration
@@ -219,7 +233,7 @@ This section discusses the process of deploying an application using ArgoCD in a
 Before you begin, make sure to delete all of the resources you created in the previous exercise -
 
 ```
-<hub> $ oc delete project webserver-acm
+oc delete project webserver-acm
 ```
 
 ## ArgoCD Installation
@@ -236,7 +250,7 @@ cd sno-quickstarts/gitops
 Make sure that the ArgoCD instance is running by navigating to ArgoCD's web UI. The URL can be found be running the next command -
 
 ```
-<hub> $ oc get route -n openshift-gitops
+oc get route -n openshift-gitops
 NAME                      HOST/PORT                                  PATH   SERVICES                  PORT    TERMINATION            WILDCARD
 ...
 openshift-gitops-server   openshift-gitops-server-openshift-gitops.<FQDN>   openshift-gitops-server   https   passthrough/Redirect   None
@@ -253,21 +267,25 @@ In this part you will create the resources to import `local-cluster` into ArgoCD
 Create the next ManagedClusterSet resource. The ManagedClusterSet resource will include the `local-cluster` cluster. The ManagedClusterSet resource is associated with the `openshift-gitops` namespace.
 
 ```
-<hub> $ cat >> managedclusterset.yaml << EOF
+cat >> managedclusterset.yaml << EOF
 ---
 apiVersion: cluster.open-cluster-management.io/v1beta2
 kind: ManagedClusterSet
 metadata:
   name: all-clusters
 EOF
-
-<hub> $ oc apply -f managedclusterset.yaml
+```
+Create Managed ClusterSet:
+```
+oc apply -f managedclusterset.yaml
 ```
 
 Now, import `local-cluster` into the ManagedClusterSet resource. Importation will be done by adding the `cluster.open-cluster-management.io/clusterset: all-clusters` label to the `local-cluster` ManagedCluster resource -
 
 ```
-<hub> $ oc edit managedcluster local-cluster
+oc edit managedcluster local-cluster
+```
+```
 ...
 labels:
 ...
@@ -276,10 +294,10 @@ labels:
 ...
 ```
 
-Create the ManagedClusterSetBinding resource to bind the `local-cluster` ManagedClusterSet resource to the `openshift-gitops` resource. Creating the ManagedClusterSetBinding resource will allow ArgoCD to access `local-cluster` information and import it into its management stack.
+Create the ManagedClusterSetBinding resource to bind the `**local-cluster**` ManagedClusterSet resource to the `openshift-gitops` resource. Creating the ManagedClusterSetBinding resource will allow ArgoCD to access `local-cluster` information and import it into its management stack.
 
 ```
-<hub> $ cat >> managedclustersetbinding.yaml << EOF
+cat >> managedclustersetbinding.yaml << EOF
 ---
 apiVersion: cluster.open-cluster-management.io/v1beta2
 kind: ManagedClusterSetBinding
@@ -289,14 +307,16 @@ metadata:
 spec:
   clusterSet: all-clusters
 EOF
-
+```
+Apply Managed ClusterSet Binding:
+```
 <hub> $ oc apply -f managedclustersetbinding.yaml
 ```
 
 Create the Placement resource and bind it to `all-clusters` ManagedClusterSet. Note that you will not be using any special filters in this exercise.
 
 ```
-<hub> $ cat >> placement.yaml << EOF
+cat >> placement.yaml << EOF
 ---
 apiVersion: cluster.open-cluster-management.io/v1beta1
 kind: Placement
@@ -307,14 +327,16 @@ spec:
   clusterSets:
     - all-clusters
 EOF
-
-<hub> $ oc apply -f placement.yaml
+```
+Apply Placement:
+```
+oc apply -f placement.yaml
 ```
 
 Create the GitOpsServer resource to indicate the location of ArgoCD and the placement resource -
 
 ```
-<hub> $ cat >> gitopsserver.yaml << EOF
+cat >> gitopsserver.yaml << EOF
 ---
 apiVersion: apps.open-cluster-management.io/v1beta1
 kind: GitOpsCluster
@@ -330,8 +352,10 @@ spec:
     apiVersion: cluster.open-cluster-management.io/v1alpha1
     name: all-clusters
 EOF
-
-<hub> $ oc apply -f gitopsserver.yaml
+```
+Create GitOps Server on ACM:
+```
+oc apply -f gitopsserver.yaml
 ```
 
 Make sure that `local cluster` is imported into ArgoCD. In ArgoCD's web UI, on the left menu bar, navigate to **Manage your repositories, projects, settings** -> **Clusters**. You should see `local-cluster` in the cluster list.
@@ -347,12 +371,16 @@ The applications are based on one [helm](https://helm.sh/) chart. Each applicati
 To create the ApplicationSet resource run the next commands -
 
 ```
-<hub> $ curl -OL https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/04.Application-Lifecycle/demo-argocd/argocd-resources/appproject.yaml
-<hub> $ vim appproject.yaml # change line 12 to cluster name 
-
-<hub> $ oc apply -f appproject.yaml
-
-<hub> $ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/04.Application-Lifecycle/exercise-argocd/argocd-resources/applicationset.yaml
+curl -OL https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/04.Application-Lifecycle/demo-argocd/argocd-resources/appproject.yaml
+```
+```
+vim appproject.yaml # change line 12 to cluster name 
+```
+```
+oc apply -f appproject.yaml
+```
+```
+oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/04.Application-Lifecycle/exercise-argocd/argocd-resources/applicationset.yaml
 ```
 
 Note that two application instances have been created in the ArgoCD UI -
@@ -363,8 +391,10 @@ Note that two application instances have been created in the ArgoCD UI -
 Make sure that the application is available by navigating to its Route resource.
 
 ```
-<hub> $ oc get route -n webserver-prod
-
+oc get route -n webserver-prod
+```
+Output:
+```
 NAME        HOST/PORT                              PATH                SERVICES    PORT       TERMINATION   WILDCARD
 webserver   webserver-webserver-prod.apps.<FQDN>   /application.html    webserver   8080-tcp   edge          None
 ```
