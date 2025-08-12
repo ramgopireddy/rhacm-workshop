@@ -1,4 +1,4 @@
-# Exercise 6 - Open Policy Agent Gatekeeper
+# Exercise 6 - Open Policy Agent Gatekeeper (Optional)
 
 In this exercise you will go through the Compliance features that come with Open Policy Agent Gatekeeper and the Compliance Operator. You will apply a number of policies to the cluster in order to comply with global security and management standards.
 
