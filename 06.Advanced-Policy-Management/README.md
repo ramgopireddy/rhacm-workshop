@@ -11,8 +11,12 @@ Note: This policy is applicable for clusters with environment=dev label.
 
 
 ```
-<hub> $ oc new-project rhacm-policies
-<hub> $ cat >> policy-gatekeeper-operator.yaml << EOF
+oc new-project rhacm-policies
+```
+
+Create a gatekeeper policy:
+```
+cat >> policy-gatekeeper-operator.yaml << EOF
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -104,16 +108,17 @@ spec:
     matchExpressions:
       - { key: environment, operator: In, values: ["production"] }
 EOF
-
-<hub> $ oc apply -f policy-gatekeeper-operator.yaml
+```
+Apply the policy:
+```
+oc apply -f policy-gatekeeper-operator.yaml
 ```
 
 ### Policy #1 - Disallow unencrypted routes
 
 Apply the next policy to the hub cluster in order to deny the creation of http (not encrypted traffic) routes on the managed clusters -
-
 ```
-<hub> $ cat >> policy-gatekeeper-httpsonly.yaml << EOF
+cat >> policy-gatekeeper-httpsonly.yaml << EOF
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -241,8 +246,10 @@ spec:
     matchExpressions:
       - { key: environment, operator: In, values: ["production"] }
 EOF
-
-<hub> $ oc apply -f policy-gatekeeper-httpsonly.yaml
+```
+Apply the policy:
+```
+oc apply -f policy-gatekeeper-httpsonly.yaml
 ```
 
 Wait until both policies are in a compliant state before you move forward with the exercise.
@@ -250,57 +257,22 @@ Wait until both policies are in a compliant state before you move forward with t
 Login to the managed cluster and try creating a web server using the next commands -
 
 ```
-<managed cluster> $ oc new-project httpd-test
-
-<managed cluster> $ oc new-app httpd
+oc new-project httpd-test
+```
+```
+oc new-app httpd
 ```
 
 Try exposing the web server using an unsecure route
 
 ```
-<managed cluster> $ oc expose svc/httpd
+oc expose svc/httpd
 ```
 
 Try exposing the web server using a secure route
 
 ```
-<managed cluster> $ oc create route edge --service=httpd
-```
-
-### Policy #2 - Namespace Management
-
-In this section you will create a Gatekeeper based policy. The policy will disallow namespaces with the `state: dangerous` label. If a namespace has this label, its creation will be disallowed. Make sure to create a message that indicates the error.
-
-An example of a disallowed namespace:
-
-```
-{
-  "apiVersion": "v1",
-  "kind": "Namespace",
-  "metadata": {
-    "labels": {
-      "state": "dangerous"
-    },
-    "name": "michael"
-  }
-}
-```
-
-You make use the presentation and the previously created policies as a reference for this policy. Use the [rego playground](https://play.openpolicyagent.org/) to check the validity of your rego policy.
-
-Check the validity of your policy by creating a violating namespace. The creation of the namespace should be disallowed -
-
-```
-<managed cluster> $ cat >> gatekeeper-disallowed-namespace.yaml << EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    state: dangerous
-  name: michael
-EOF
-
-<managed cluster> $ oc apply -f gatekeeper-disallowed-namespace.yaml
+oc create route edge --service=httpd
 ```
 
 ## Compliance Operator Integration
@@ -310,13 +282,15 @@ In this section you will perform an integration between Red Hat Advanced Cluster
 Run the next command to deploy the Compliance Operator using an RHACM policy -
 
 ```
-<hub> $ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/06.Advanced-Policy-Management/exercise-compliance-operator/policy-compliance-operator.yaml
+oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/06.Advanced-Policy-Management/exercise-compliance-operator/policy-compliance-operator.yaml
 ```
 
 Make sure that the policy has been deployed successfully in RHACM's Governance dashboard - The policy status needs to be **compliant**. The Compliance Operator is deployed in the `openshift-compliance` namespace on the managed cluster.
-
 ```
-<managed cluster> $ oc get pods -n openshift-compliance
+oc get pods -n openshift-compliance
+```
+Output:
+```
 NAME                                                    READY   STATUS      RESTARTS   AGE
 compliance-operator-8c9bc7466-8h4js                     1/1     Running     1          7m27s
 ocp4-openshift-compliance-pp-6d7c7db4bd-wb5vf           1/1     Running     0          4m51s
@@ -326,13 +300,13 @@ rhcos4-openshift-compliance-pp-c7b548bd-8pbhq           1/1     Running     0   
 Now that the Compliance Operator is deployed, initiate a compliance scan using an RHACM policy. To initiate a compliance scan, run the next command -
 
 ```
-<hub> $ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/06.Advanced-Policy-Management/exercise-compliance-operator/policy-moderate-scan.yaml
+oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/06.Advanced-Policy-Management/exercise-compliance-operator/policy-moderate-scan.yaml
 ```
 
 After running the command, a compliance scan is initiated. The scan will take about 5 minutes to complete. Run the next command on the managed cluster to check the status of the scan -
 
 ```
-<managed cluster> $ oc get compliancescan -n openshift-compliance
+oc get compliancescan -n openshift-compliance
 NAME                     PHASE     RESULT
 ocp4-moderate            RUNNING   NOT-AVAILABLE
 rhcos4-moderate-master   RUNNING   NOT-AVAILABLE
