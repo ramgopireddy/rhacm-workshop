@@ -359,7 +359,7 @@ oc get limitrange webserver-limit-range -o yaml -n webserver-acm
 ```
 
 As the admin user in the managed cluster, try to modify the values of the LimitRange resource (change the memory limit from 512Mi to 1024Mi) -
-
+```
 oc edit limitrange/webserver-limit-range -n webserver-acm
 ```
 
@@ -367,6 +367,9 @@ Notice that if you list the LimitRange resource again, the value of the memory l
 
 ```
 oc get limitrange webserver-limit-range -o yaml -n webserver-acm
+```
+Output
+```
 ...
   limits:
   - default:
