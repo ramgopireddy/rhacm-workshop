@@ -10,6 +10,12 @@ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/04
 
 **NOTE!** Make sure that the `environment=production` label is associated with the managed cluster!
 
+Try to access the route exposed by the application deployed in the previous step:
+
+```
+oc get routes -n webserver-acm
+```
+
 Before you start creating the policies, make sure to create a namespace to populate the CRs that associate with RHACM policies.
 
 ```
