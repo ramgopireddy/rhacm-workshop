@@ -11,24 +11,24 @@ This part focuses on the `Observability` addon deployment. In order to deploy th
 To create a namespace for the `MCO operator` to run in, run the next commands on the hub cluster -
 
 ```
-<hub> $ oc login -u <admin-user> -p <password> https://api.cluster.2222.sandbox.opentlc.com:6443
-
-<hub> $ oc new-project open-cluster-management-observability
+oc new-project open-cluster-management-observability
 ```
 
 To create the `minio` deployment run the next commands on the hub cluster -
 
 ```
-<hub> $ git clone https://github.com/open-cluster-management/multicluster-observability-operator.git
-
-<hub> $ oc apply -k multicluster-observability-operator/examples/minio/ -n open-cluster-management-observability
+git clone https://github.com/open-cluster-management/multicluster-observability-operator.git
+```
+```
+oc apply -k multicluster-observability-operator/examples/minio/ -n open-cluster-management-observability
 ```
 
 After running the command, a `minio` deployment will be available. The S3 endpoint is now exported in the `thanos-object-storage` secret.
 
 ```
-<hub> $ oc extract secret/thanos-object-storage --to=- -n open-cluster-management-observability
-
+oc extract secret/thanos-object-storage --to=- -n open-cluster-management-observability
+```
+```
 # thanos.yaml
 type: s3
 config:
@@ -44,48 +44,52 @@ To create an instance of `Multi Cluster Obervability`, apply the next object to 
 **NOTE** If you're not using an OpenShift cluster that's deployed on AWS, make sure to modify the StorageClass definition in the below YAML.
 
 ```
-<hub> $ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/03.Observability/exercise/multiclusterobservability.yaml -n open-cluster-management-observability
+oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/03.Observability/exercise/multiclusterobservability.yaml -n open-cluster-management-observability
 ```
 
 Make sure that both `multicluster-observability-operator` and `endpoint-operator` are deployed (all pods must be in `Running` state).
 
 ```
-<hub> $ oc get pods -n open-cluster-management-observability
+oc get pods -n open-cluster-management-observability
+```
 
-NAME                                                       READY   STATUS    RESTARTS   AGE
-grafana-dev-5f9585d797-qnpms                               2/2     Running   0          27h
-minio-79c7ff488d-wbzrm                                     1/1     Running   0          2d1h
-observability-alertmanager-0                               3/3     Running   0          2d1h
-observability-alertmanager-1                               3/3     Running   0          2d1h
-observability-alertmanager-2                               3/3     Running   0          2d1h
-observability-grafana-6556b6d979-n72hv                     2/2     Running   0          2d1h
-observability-grafana-6556b6d979-rjf27                     2/2     Running   0          2d1h
-observability-observatorium-api-84fd8849b7-f9bkv           1/1     Running   0          2d1h
-observability-observatorium-api-84fd8849b7-z5b9r           1/1     Running   0          2d1h
-observability-observatorium-operator-74975fc6fb-gl4pr      1/1     Running   0          2d1h
-observability-rbac-query-proxy-66c4944d4d-9ptzp            2/2     Running   0          2d1h
-observability-rbac-query-proxy-66c4944d4d-rkl9g            2/2     Running   0          2d1h
-observability-thanos-compact-0                             1/1     Running   0          2d1h
-observability-thanos-query-5bf8459f67-bgpzw                1/1     Running   0          2d1h
-observability-thanos-query-5bf8459f67-rzwss                1/1     Running   0          2d1h
-observability-thanos-query-frontend-d6bd84889-9n9kw        1/1     Running   0          2d1h
-observability-thanos-query-frontend-d6bd84889-bvn9f        1/1     Running   0          2d1h
-observability-thanos-query-frontend-memcached-0            2/2     Running   0          2d1h
-observability-thanos-query-frontend-memcached-1            2/2     Running   0          2d1h
-observability-thanos-query-frontend-memcached-2            2/2     Running   0          2d1h
-observability-thanos-receive-controller-7c775bcdff-7b5gb   1/1     Running   0          2d1h
-observability-thanos-receive-default-0                     1/1     Running   0          2d1h
-observability-thanos-receive-default-1                     1/1     Running   0          2d1h
-observability-thanos-receive-default-2                     1/1     Running   0          2d1h
-observability-thanos-rule-0                                2/2     Running   0          27h
-observability-thanos-rule-1                                2/2     Running   0          27h
-observability-thanos-rule-2                                2/2     Running   0          27h
-observability-thanos-store-memcached-0                     2/2     Running   0          2d1h
-observability-thanos-store-memcached-1                     2/2     Running   0          2d1h
-observability-thanos-store-memcached-2                     2/2     Running   0          2d1h
-observability-thanos-store-shard-0-0                       1/1     Running   2          2d1h
-observability-thanos-store-shard-1-0                       1/1     Running   2          2d1h
-observability-thanos-store-shard-2-0                       1/1     Running   2          2d1h
+```
+NAME                                                       READY   STATUS    RESTARTS        AGE
+endpoint-observability-operator-5f4b9c8b7d-gmpfc           1/1     Running   1               7h12m
+metrics-collector-deployment-6664df9fc4-kqlxx              1/1     Running   0               5h14m
+minio-7cfdffb54b-mw7xp                                     1/1     Running   1               7h13m
+observability-alertmanager-0                               4/4     Running   4               7h12m
+observability-alertmanager-1                               4/4     Running   4               7h11m
+observability-alertmanager-2                               4/4     Running   4               7h11m
+observability-grafana-6f487974db-lwfqw                     3/3     Running   3               7h12m
+observability-grafana-6f487974db-v5zzt                     3/3     Running   3               7h12m
+observability-observatorium-api-7f958b4f96-plsds           1/1     Running   1               7h11m
+observability-observatorium-api-7f958b4f96-pz9m6           1/1     Running   1               7h11m
+observability-observatorium-operator-74fc5cf5f5-jxgzz      1/1     Running   1               7h12m
+observability-rbac-query-proxy-66f664f4b5-jqhmm            2/2     Running   2               7h12m
+observability-rbac-query-proxy-66f664f4b5-xhfgm            2/2     Running   2               7h12m
+observability-thanos-compact-0                             1/1     Running   1               7h12m
+observability-thanos-query-5d865cb77b-87sx8                1/1     Running   1               7h12m
+observability-thanos-query-5d865cb77b-qvbwb                1/1     Running   1               7h12m
+observability-thanos-query-frontend-746976f45d-brl7w       1/1     Running   1               7h12m
+observability-thanos-query-frontend-746976f45d-nqs7h       1/1     Running   1               7h12m
+observability-thanos-query-frontend-memcached-0            2/2     Running   2               7h12m
+observability-thanos-query-frontend-memcached-1            2/2     Running   2               7h12m
+observability-thanos-query-frontend-memcached-2            2/2     Running   2               7h11m
+observability-thanos-receive-controller-7cbd44fcdc-2mzr4   1/1     Running   1               7h12m
+observability-thanos-receive-default-0                     1/1     Running   1               7h12m
+observability-thanos-receive-default-1                     1/1     Running   1               7h11m
+observability-thanos-receive-default-2                     1/1     Running   1               7h11m
+observability-thanos-rule-0                                2/2     Running   2               7h12m
+observability-thanos-rule-1                                2/2     Running   3 (5h14m ago)   7h11m
+observability-thanos-rule-2                                2/2     Running   2               7h11m
+observability-thanos-store-memcached-0                     2/2     Running   2               7h12m
+observability-thanos-store-memcached-1                     2/2     Running   2               7h12m
+observability-thanos-store-memcached-2                     2/2     Running   2               7h11m
+observability-thanos-store-shard-0-0                       1/1     Running   4 (5h14m ago)   7h12m
+observability-thanos-store-shard-1-0                       1/1     Running   4 (5h14m ago)   7h12m
+observability-thanos-store-shard-2-0                       1/1     Running   3               7h12m
+uwl-metrics-collector-deployment-7b9b5fc5c4-rcqf5          1/1     Running   0               5h14m
 
 ```
 
@@ -232,7 +236,9 @@ For this panel, you will create a same graph like in the previous section, but t
 Make sure that you get the correct values by running the next command on the hub cluster -
 
 ```
-<hub> $ oc adm top node
+oc adm top node
+```
+```
 NAME                                         CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
 ip-10-0-138-131.us-east-2.compute.internal   2064m        27%    10496Mi         34%       
 ip-10-0-148-108.us-east-2.compute.internal   3259m        21%    11826Mi         19%       
