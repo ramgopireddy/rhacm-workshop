@@ -367,9 +367,11 @@ Notice that if you list the LimitRange resource again, the value of the memory l
 ...
 ```
 
-## Policy #3 - Namespace management
+## Policy #3 - Namespace management (Optional)
 
 In this section, you will create a policy that `informs` if a namespace with the name `rhacm-dangerous-policy-namespace` is present. Make sure to create the policy in the `rhacm-policies` namespace You may use the workshop presentation and the policies you've created in this exercise as a reference for the creation of this policy.
+
+Make a copy of the earlier Policy yaml and edit as needed.
 
 After deploying the policy, make sure that it is in a `compliant` state.
 
@@ -391,14 +393,14 @@ Before you start this section of the exercise, make sure you delete the namespac
 <hub> $ oc delete project rhacm-policies
 ```
 
-1. For this exercise, create a fork of the next GitHub repository - [https://github.com/tosin2013/rhacm-workshop](https://github.com/tosin2013/rhacm-workshop)
+1. For this exercise, you can create a fork of the next GitHub repository - [https://github.com/tosin2013/rhacm-workshop](https://github.com/tosin2013/rhacm-workshop). This will allow for testing to directly edit policies from git. If you do want to use the fork, please replace the urls with your own forked repo for the duration of this exercise.
 
-    As a result, you will have your own version of the repository - [https://github.com/&lt;your-username>/rhacm-workshop](https://github.com/tosin2013/rhacm-workshop)
+    As a result, you will have your own version of the repository - [https://github.com/&lt;your-username>/rhacm-workshop](https://github.com/&lt;your-username>/rhacm-workshop)
 
-2. Afterwards, create a namespace on which you will deploy the RHACM resources (Use the namespace.yaml file in the forked repository) -
+2. Afterwards, create a namespace on which you will deploy the RHACM resources (Use the namespace.yaml file in the repository) -
 
 ```
-<hub> $ oc apply -f https://raw.githubusercontent.com/<your-github-username>/rhacm-workshop/master/05.Governance-Risk-Compliance/exercise/namespace.yaml
+<hub> $ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/05.Governance-Risk-Compliance/exercise/namespace.yaml
 ```
 
 3. Now, clone the official policy-collection GitHub repository to your machine. The repository contains a binary named **deploy.sh**. The binary is used to associate policies in a GitHub repository to a running Red Hat Advanced Cluster Management for Kubernetes cluster.
@@ -442,7 +444,7 @@ spec:
     type: HTPasswd
 ```
 
-4.c. Replace the cluster's identity provider by running the next command -
+4.c. Replace the cluster's identity provider by running the next command. This will take a few minutes to apply. -
 
 ```
 <hub> $ oc replace -f oauth.yaml
@@ -463,7 +465,7 @@ spec:
 6. You can now deploy the policies from your forked repository to Advanced Cluster Management.
 
 ```
-<hub> $ ./deploy.sh --url https://github.com/<your-github-username>/rhacm-workshop.git --branch master --path 05.Governance-Risk-Compliance/exercise/exercise-policies --namespace rhacm-policies
+<hub> $ ./deploy.sh --url https://github.com/tosin2013/rhacm-workshop.git --branch master --path 05.Governance-Risk-Compliance/exercise/exercise-policies --namespace rhacm-policies
 ```
 
 7. Make sure that the policies are deployed in the **Governance** -> **Policies** tab in the Advanced Cluster Management for Kubernetes console.
@@ -471,7 +473,7 @@ spec:
 ![policies-overview](images/policies-overview.png)
 
 
-8. Edit the LimitRange policy in [https://github.com/&lt;your-username>/rhacm-workshop/blob/master/05.Governance-Risk-Compliance/exercise/exercise-policies/limitrange-policy.yaml](https://github.com/tosin2013/rhacm-workshop/blob/master/05.Governance-Risk-Compliance/exercise/exercise-policies/limitrange-policy.yaml). Change the default container limit from 512Mi to 1024Mi.
+8. (Optional) Edit the LimitRange policy in [https://github.com/&lt;your-username>/rhacm-workshop/blob/master/05.Governance-Risk-Compliance/exercise/exercise-policies/limitrange-policy.yaml](https://github.com/&lt;your-username>/rhacm-workshop/blob/master/05.Governance-Risk-Compliance/exercise/exercise-policies/limitrange-policy.yaml). Change the default container limit from 512Mi to 1024Mi.
 
 9. Make sure that you commit, and push the change to your fork.
 
