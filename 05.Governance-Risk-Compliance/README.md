@@ -13,14 +13,15 @@ In this exercise you will go through the Compliance features that come with Red 
 Before you start creating the policies, make sure to create a namespace to populate the CRs that associate with RHACM policies.
 
 ```
-<hub> $ cat >> policies-namespace.yaml << EOF
+cat >> policies-namespace.yaml << EOF
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: rhacm-policies
 EOF
-
+```
+```
 <hub> $ oc apply -f policies-namespace.yaml
 ```
 
