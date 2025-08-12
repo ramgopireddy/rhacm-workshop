@@ -540,7 +540,10 @@ oc apply -f https://raw.githubusercontent.com/tosin2013/rhacm-workshop/master/05
 Wait until the application is available. After the application is available, make sure that the policy you have deployed is compliant in the Governance dashboard. Make sure that the template worked by running the next command on the managed cluster.
 
 ```
-<managed cluster> $ oc get configmap metrics-connection-string -o yaml -n mariadb-metrics
+oc get configmap metrics-connection-string -o yaml -n mariadb-metrics
+```
+
+```
 apiVersion: v1
 data:
   connection_string: root:cmVkaGF0@(172.30.14.60:3306)/
